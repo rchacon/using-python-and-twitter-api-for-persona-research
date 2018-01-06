@@ -39,7 +39,7 @@ env_dir = os.path.dirname(os.path.join(os.path.abspath(sys.argv[0]), VIRTUALENV_
 
 sys.path.append(os.path.join(env_dir, 'Lib', 'site-packages'))
 
-data_files = find_data_files('.', '.', ['README.md', 'api_keys.exmaple.json'])
+data_files = find_data_files('.', '.', ['README.md', 'config.exmaple.json'])
 
 options = {
     "py2exe": {
