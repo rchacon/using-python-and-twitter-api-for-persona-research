@@ -1,20 +1,32 @@
-import re
+from collections import Counter
 import csv
 import datetime
+import json
+import os
+import re
+import sys
+
 import requests
 from requests.auth import HTTPBasicAuth
-import tweepy
-from collections import Counter
 from tld import get_tld
-
-from api_keys import *
+import tweepy
 
 
 LIMIT = 50
 
 # Twitter auth
-auth = tweepy.OAuthHandler(twitter_ckey, twitter_csecret)
-auth.set_access_token(twitter_atoken, twitter_asecret)
+APP_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
+
+try:
+    with open(os.path.join(APP_DIR, 'api_keys.json')) as f:
+        api_keys = json.load(f)
+except IOError:
+    sys.exit('Copy api_keys.example.json and save as api_keys.json')
+
+auth = tweepy.OAuthHandler(api_keys['twitter']['consumer_key'],
+                           api_keys['twitter']['consumer_secret'])
+auth.set_access_token(api_keys['twitter']['access_token'],
+                      api_keys['twitter']['access_secret'])
 api = tweepy.API(auth)
 
 # create some empty lists
@@ -75,7 +87,8 @@ def CountDomains(usernames):
     print str(len(links)) + " links.\n"
 
     # for each of the urls in the urls list that was created above...
-    session.auth = HTTPBasicAuth(watson_username, watson_password)
+    session.auth = HTTPBasicAuth(api_keys['watson']['username'],
+                                 api_keys['watson']['password'])
     for link in links:
         # create a new url by concatenating the concepts API base url
         # (defined at the start) to the link we want to get the concepts for
