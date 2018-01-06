@@ -2,15 +2,15 @@ import re
 import csv
 import datetime
 import requests
+from requests.auth import HTTPBasicAuth
 import tweepy
-from xml.etree import ElementTree
 from collections import Counter
-from tweepy import API
-from tweepy import OAuthHandler
 from tld import get_tld
 
 from api_keys import *
 
+
+LIMIT = 50
 
 # Twitter auth
 auth = tweepy.OAuthHandler(twitter_ckey, twitter_csecret)
@@ -25,19 +25,20 @@ topics = []
 tags = []
 
 # make variables for the two Alchemy APIs I want to use
-ConceptsAPI = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts?apikey=" + watson_api_key + "&url="
+ConceptsAPI = "https://gateway.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2017-02-27"
 
 # make a variable for the Twitter usernames file by reading the text
 # file usernames.txt
-usernames = open('usernames.txt', 'r+')
-# create a variable named usernames which is the usernames split by line.
-usernames = usernames.read().splitlines()
+with open('usernames.txt', 'r+') as f:
+    usernames = f.read().splitlines()
 
 
 def CountDomains(usernames):
 
     print "Starting tweet collection..."
     print str(len(usernames)) + " usernames.\n"
+
+    session = requests.Session()
 
     # for all the usernames in the usernames file...
     for name in usernames:
@@ -58,7 +59,7 @@ def CountDomains(usernames):
                 try:
                     # request each link using the requests library
                     # follow redirects.
-                    link = requests.get(url, allow_redirects=True).url
+                    link = session.get(url, allow_redirects=True).url
                     # put all of the urls into the list named links
                     links.append(link)
                     # use the get_tld function from the tld library
@@ -70,26 +71,32 @@ def CountDomains(usernames):
 
         print "\tFinished: " + name
 
-    print "\nStarting Alchemy analysis of links..."
+    print "\nStarting Watson analysis of links..."
     print str(len(links)) + " links.\n"
 
     # for each of the urls in the urls list that was created above...
+    session.auth = HTTPBasicAuth(watson_username, watson_password)
     for link in links:
         # create a new url by concatenating the concepts API base url
         # (defined at the start) to the link we want to get the concepts for
-        apiurl = ConceptsAPI+link
+        payload = {
+            "url": link,
+            "features": {
+                "concepts": {
+                    "limit": LIMIT
+                }
+            }
+        }
 
         # create a variable named r which is the content from the API request
-        r = requests.get(apiurl)
+        r = session.post(ConceptsAPI, json=payload)
 
-        # use the ElementTree function from the xml library to create
-        # a new variable named doc from the xml returned in the API call
-        doc = ElementTree.fromstring(r.text)
+        if r.status_code != 200:
+            print "\nConceptsAPI returned %s: %s for %s" % (r.status_code, r.text, link)
+            continue
 
-        # find all the <text> tags in the xml and assign the name tag.
-        # The <text> tag is the concept text that we want to keep a list of.
-        for tag in doc.findall('.//text'):
-            tags.append(tag.text)
+        for concept in r.json()["concepts"]:
+            tags.append(concept["text"])
         print "\tFinished: " + link
 
     print "\nDone. :)"

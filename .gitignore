@@ -4,3 +4,4 @@ api_keys.py
 *.csv
 *.pyc
 usernames.txt
+venv/

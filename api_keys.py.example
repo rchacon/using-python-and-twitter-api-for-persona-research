@@ -1,0 +1,11 @@
+twitter_ckey = 'YOUR TWITTER CONSUMER KEY'
+
+twitter_csecret = 'YOUR TWITTER CONSUMER SECRET'
+
+twitter_atoken = 'YOUR TWITTER ACCESS TOKEN'
+
+twitter_asecret = 'YOUR TWITTER ACCESS TOKEN SECRET'
+
+watson_username = 'YOUR WATSON USERNAME'
+
+watson_password = 'YOUR WATSON PASSWORD'
