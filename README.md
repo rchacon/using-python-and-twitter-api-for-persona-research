@@ -6,7 +6,14 @@ Sign up for [Watson AI Platform](https://www.ibm.com/watson/developer/)
 
 Add the Twitter handles you want to analyse to the file named `usernames.txt`
 
-Add the API keys you created to the file named `config.json`
+Sample contents for `usernames.txt`:
+
+```
+LinusTech
+MKBHD
+```
+
+Add the API keys you created to the file named `config.json`. See `config.example.json` for an example.
 
 Run script: `python get_tweets.py`
 

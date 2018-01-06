@@ -39,8 +39,11 @@ ConceptsAPI = "https://gateway.watsonplatform.net/natural-language-understanding
 
 # make a variable for the Twitter usernames file by reading the text
 # file usernames.txt
-with open('usernames.txt', 'r+') as f:
-    usernames = f.read().splitlines()
+try:
+    with open('usernames.txt', 'r+') as f:
+        usernames = f.read().splitlines()
+except IOError:
+    sys.exit('usernames.txt not found.')
 
 
 def CountDomains(usernames):
