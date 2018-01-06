@@ -7,6 +7,7 @@
   },
   "watson": {
     "username": "YOUR WATSON USERNAME",
-    "password": "YOUR WATSON PASSWORD"
+    "password": "YOUR WATSON PASSWORD",
+    "limit": 3
   }
 }

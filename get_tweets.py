@@ -12,21 +12,19 @@ from tld import get_tld
 import tweepy
 
 
-LIMIT = 50
-
-# Twitter auth
 APP_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
 
 try:
-    with open(os.path.join(APP_DIR, 'api_keys.json')) as f:
-        api_keys = json.load(f)
+    with open(os.path.join(APP_DIR, 'config.json')) as f:
+        config = json.load(f)
 except IOError:
-    sys.exit('Copy api_keys.example.json and save as api_keys.json')
+    sys.exit('Copy config.example.json and save as config.json')
 
-auth = tweepy.OAuthHandler(api_keys['twitter']['consumer_key'],
-                           api_keys['twitter']['consumer_secret'])
-auth.set_access_token(api_keys['twitter']['access_token'],
-                      api_keys['twitter']['access_secret'])
+# Twitter auth
+auth = tweepy.OAuthHandler(config['twitter']['consumer_key'],
+                           config['twitter']['consumer_secret'])
+auth.set_access_token(config['twitter']['access_token'],
+                      config['twitter']['access_secret'])
 api = tweepy.API(auth)
 
 # create some empty lists
@@ -87,8 +85,8 @@ def CountDomains(usernames):
     print str(len(links)) + " links.\n"
 
     # for each of the urls in the urls list that was created above...
-    session.auth = HTTPBasicAuth(api_keys['watson']['username'],
-                                 api_keys['watson']['password'])
+    session.auth = HTTPBasicAuth(config['watson']['username'],
+                                 config['watson']['password'])
     for link in links:
         # create a new url by concatenating the concepts API base url
         # (defined at the start) to the link we want to get the concepts for
@@ -96,7 +94,7 @@ def CountDomains(usernames):
             "url": link,
             "features": {
                 "concepts": {
-                    "limit": LIMIT
+                    "limit": config['watson']['limit']
                 }
             }
         }
