@@ -45,8 +45,8 @@ def CountDomains(usernames):
         try:
             # create a variable named public_tweets
             public_tweets = api.user_timeline(name, count=20)
-        except:
-            print "private profile"
+        except Exception as ex:
+            print "Error getting timeline for %s: %s" % (name, ex.message)
             continue
         # for every tweet in the public_tweets list...
         for tweet in public_tweets:
