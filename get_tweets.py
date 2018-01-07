@@ -116,16 +116,14 @@ def CountDomains(usernames):
     today = datetime.datetime.now()
     postfix = today.strftime('%Y-%m-%d-%H-%M')
 
-    with open("domains_" + postfix + ".csv", "a") as personas:
+    with open("domains_" + postfix + ".csv", "wb") as personas:
         personaswriter = csv.writer(personas)
         for domain, count in dict(Counter(domains)).items():
             personaswriter.writerow([domain, count])
-        personas.close()
 
-    with open("concepts_" + postfix + ".csv", "a") as concepts:
+    with open("concepts_" + postfix + ".csv", "wb") as concepts:
         conceptswriter = csv.writer(concepts)
         for tag, count in dict(Counter(tags)).items():
             conceptswriter.writerow([tag, count])
-        concepts.close()
 
 CountDomains(usernames)
