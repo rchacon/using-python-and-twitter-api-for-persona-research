@@ -14,6 +14,10 @@ import tweepy
 
 APP_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
 
+# workaround for using requests with py2exe
+if os.path.isfile(os.path.join(APP_DIR, 'cacert.pem')):
+    os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(APP_DIR, 'cacert.pem')
+
 try:
     with open(os.path.join(APP_DIR, 'config.json')) as f:
         config = json.load(f)

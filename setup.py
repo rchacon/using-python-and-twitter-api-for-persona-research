@@ -7,9 +7,6 @@ import time
 import py2exe
 
 
-VIRTUALENV_DIR = 'venv'
-
-
 def find_data_files(source, target, patterns):
     """Locates the specified data-files and returns the matches
     in a data_files compatible format.
@@ -35,11 +32,13 @@ def find_data_files(source, target, patterns):
     return sorted(ret.items())
 
 
-env_dir = os.path.dirname(os.path.join(os.path.abspath(sys.argv[0]), VIRTUALENV_DIR))
+env_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 sys.path.append(os.path.join(env_dir, 'Lib', 'site-packages'))
 
-data_files = find_data_files('.', '.', ['README.md', 'config.exmaple.json'])
+data_files = find_data_files('.', '.', ['README.md', 'config.example.json'])
+data_files.extend(find_data_files(os.path.join(env_dir, 'Lib', 'site-packages', 'requests'), '.', ['cacert.pem']))
+data_files.extend(find_data_files(os.path.join(env_dir, 'Lib', 'site-packages', 'tld', 'res'), '.', ['effective_tld_names.dat.txt']))
 
 options = {
     "py2exe": {
