@@ -18,11 +18,8 @@ APP_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
 if os.path.isfile(os.path.join(APP_DIR, 'cacert.pem')):
     os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(APP_DIR, 'cacert.pem')
 
-try:
-    with open(os.path.join(APP_DIR, 'config.json')) as f:
-        config = json.load(f)
-except IOError:
-    sys.exit('Copy config.example.json and save as config.json')
+with open(os.path.join(APP_DIR, 'config.json')) as f:
+    config = json.load(f)
 
 # Twitter auth
 auth = tweepy.OAuthHandler(config['twitter']['consumer_key'],
@@ -43,11 +40,8 @@ ConceptsAPI = "https://gateway.watsonplatform.net/natural-language-understanding
 
 # make a variable for the Twitter usernames file by reading the text
 # file usernames.txt
-try:
-    with open('usernames.txt', 'r+') as f:
-        usernames = f.read().splitlines()
-except IOError:
-    sys.exit('usernames.txt not found.')
+with open('usernames.txt', 'r+') as f:
+    usernames = f.read().splitlines()
 
 
 def CountDomains(usernames):
