@@ -9,5 +9,6 @@
     "username": "YOUR WATSON USERNAME",
     "password": "YOUR WATSON PASSWORD",
     "limit": 3
-  }
+  },
+  "log_level": "INFO"
 }

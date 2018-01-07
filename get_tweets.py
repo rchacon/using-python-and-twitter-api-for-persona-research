@@ -2,6 +2,7 @@ from collections import Counter
 import csv
 import datetime
 import json
+import logging
 import os
 import re
 import sys
@@ -44,20 +45,44 @@ with open('usernames.txt', 'r+') as f:
     usernames = f.read().splitlines()
 
 
+def get_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(getattr(logging, config['log_level']))
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # Stream handler
+    stream_hdlr = logging.StreamHandler()
+    # stream_hdlr.setLevel(logging.INFO)
+    stream_hdlr.setFormatter(formatter)
+    logger.addHandler(stream_hdlr)
+
+    # Setup logging to file
+    file_hdlr = logging.FileHandler('get_tweets.log')
+    # file_hdlr.setLevel(logging.INFO)
+    file_hdlr.setFormatter(formatter)
+    logger.addHandler(file_hdlr)
+
+    return logger
+
+
+logger = get_logger(__name__)
+
+
 def CountDomains(usernames):
 
-    print "Starting tweet collection..."
-    print str(len(usernames)) + " usernames.\n"
+    logger.info("Starting tweet collection...")
+    logger.info(str(len(usernames)) + " usernames.")
 
     session = requests.Session()
 
     # for all the usernames in the usernames file...
     for name in usernames:
+        logger.info('Getting timeline for %s' % name)
         try:
             # create a variable named public_tweets
             public_tweets = api.user_timeline(name, count=20)
-        except Exception as ex:
-            print "Error getting timeline for %s: %s" % (name, ex.message)
+        except Exception:
+            logger.exception("Error getting timeline for %s" % name)
             continue
         # for every tweet in the public_tweets list...
         for tweet in public_tweets:
@@ -78,12 +103,13 @@ def CountDomains(usernames):
                     # append the domain to the domains list
                     domains.append(domain)
                 except:
+                    logger.exception('Trouble determining top level domain for %s' % url)
                     pass
 
-        print "\tFinished: " + name
+        logger.info("Finished: " + name)
 
-    print "\nStarting Watson analysis of links..."
-    print str(len(links)) + " links.\n"
+    logger.info("Starting Watson analysis of links...")
+    logger.info(str(len(links)) + " links.")
 
     # for each of the urls in the urls list that was created above...
     session.auth = HTTPBasicAuth(config['watson']['username'],
@@ -100,18 +126,19 @@ def CountDomains(usernames):
             }
         }
 
+        logger.debug('Sending %s to watson for analysis' % link)
         # create a variable named r which is the content from the API request
         r = session.post(ConceptsAPI, json=payload)
 
         if r.status_code != 200:
-            print "\nConceptsAPI returned %s: %s for %s" % (r.status_code, r.text, link)
+            logger.warning("ConceptsAPI returned %s: %s for %s" % (r.status_code, r.text, link))
             continue
 
         for concept in r.json()["concepts"]:
             tags.append(concept["text"])
-        print "\tFinished: " + link
+        logger.info("Finished: " + link)
 
-    print "\nDone. :)"
+    logger.info("Done. :)")
 
     today = datetime.datetime.now()
     postfix = today.strftime('%Y-%m-%d-%H-%M')
