@@ -52,13 +52,11 @@ def get_logger(name):
 
     # Stream handler
     stream_hdlr = logging.StreamHandler()
-    # stream_hdlr.setLevel(logging.INFO)
     stream_hdlr.setFormatter(formatter)
     logger.addHandler(stream_hdlr)
 
     # Setup logging to file
     file_hdlr = logging.FileHandler('get_tweets.log')
-    # file_hdlr.setLevel(logging.INFO)
     file_hdlr.setFormatter(formatter)
     logger.addHandler(file_hdlr)
 
