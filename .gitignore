@@ -6,3 +6,9 @@ config.json
 usernames.txt
 venv/
 *.log
+Include/
+Lib/
+Scripts/
+tcl/
+dist/
+build/
