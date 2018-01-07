@@ -1,6 +1,14 @@
 *.sublime-project
 *.sublime-workspace
-api_keys.py
+config.json
 *.csv
 *.pyc
 usernames.txt
+venv/
+*.log
+Include/
+Lib/
+Scripts/
+tcl/
+dist/
+build/
